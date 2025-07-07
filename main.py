@@ -13,6 +13,11 @@ import sqlite3
 from pathlib import Path
 import shutil
 import re
+from threading import Thread
+from flask import Flask
+
+# Flask app for keep-alive ping
+app = Flask('')
 
 # Load environment variables
 from dotenv import load_dotenv
@@ -323,7 +328,17 @@ Answer:"""
 # Bot instance
 bot = StudyGuideBot()
 
+@app.route('/')
+def home():
+    return "I'm alive!", 200
+
+def run_flask():
+    app.run(host='0.0.0.0', port=8080)
+
+# Start Flask server in separate thread
 if __name__ == "__main__":
+    Thread(target=run_flask).start()
+
     token = os.getenv('DISCORD_TOKEN')
     if not token:
         logger.error("DISCORD_TOKEN not found in environment variables")
